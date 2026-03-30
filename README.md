@@ -1,5 +1,6 @@
 # lovable-dev
 Simple image for running lovable app in dev mode.
+This image is specifically built to temporally serve a Lovable application using dev-mode in a self-hosted Supabase environment.
 
 ## Docker Compose usage
 
