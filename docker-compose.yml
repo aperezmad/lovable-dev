@@ -1,0 +1,34 @@
+services:
+  node-dev:
+    
+    image: ghcr.io/aperezmad/lovable-dev:latest
+    container_name: ${APP_PREFIX}-lovable-dev 
+    user: "0:0"
+    volumes:
+      - ${BASE_PATH:-/root/app-data}/${APP_PATH}/app:/home/node/app
+      - node-modules:/home/node/app/node_modules
+    #command: tail -f /dev/null
+    command: sh -c "bun install && bun dev"
+    stdin_open: true
+    tty: true
+    networks:
+      traefik-net:
+    environment:
+      VITE_SUPABASE_URL: ${SUPABASE_API_URL}
+      VITE_SUPABASE_PUBLISHABLE_KEY: ${SUPABASE_ANON_KEY}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      HOST: 0.0.0.0
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.${APP_PREFIX}.rule=Host(`${URL}`)"
+      - "traefik.http.routers.${APP_PREFIX}.entrypoints=websecure"
+      - "traefik.http.routers.${APP_PREFIX}.tls.certresolver=letsencrypt"
+      - "traefik.http.services.${APP_PREFIX}.loadbalancer.server.port=8080"
+   
+networks:
+  traefik-net:
+    external: true
+    name: traefik-net
+
+volumes:
+  node-modules:
